@@ -1,0 +1,216 @@
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script type="text/javascript">
+
+    var canvas;     //deklaracja obiektu "p³ótno" 
+    var c;			//na p³ótnie wyœwietlana jest grafika
+
+    function clear_canvas() {		  //czyszczenie p³ótna
+        canvas = document.getElementById("canvas");
+        if (!canvas.getContext) { return; }
+        c = canvas.getContext("2d");
+        c.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function line(a, b, style) {	        //rysowanie odcinka
+        canvas = document.getElementById("canvas");
+        if (!canvas.getContext) { return; }
+        c = canvas.getContext("2d");
+        c.beginPath();
+        c.moveTo(a[0], a[1]);
+        c.lineTo(b[0], b[1]);
+        c.strokeStyle = style || "rgb(200,0,0)";
+        c.stroke();
+    }
+
+
+    var E = [320, 240]; 		// po³o¿enie obserwatora
+	var d=700;					// d = ogniskowa (odleg³oœæ obserwatora od rzutni)
+    
+	function projectXY(p, d) {	// rzutowanie perpektywiczne, 
+								// obrazem punktu p (w przestrzeni 3D) jest punkt q (na p³aszczyŸnie XY)
+        var q = [];
+        q[0] = (p[0]-E[0]) * d / (d + p[2]) + E[0];
+        q[1] = (p[1]-E[1]) * d / (d + p[2]) + E[1];
+        return q;
+    }
+    
+
+	
+	function line3D(a, b, color) {  					 //rysowanie odcinka w 3 wymiarach
+		line(projectXY(a,d), projectXY(b,d), color);	 
+	 }
+    
+	function scale(v, s) {           //skalowanie, v=tablica wierzcho³ków, s=skala
+        for (var i = 0; i < v.length; i++) {
+            for (var j = 0; j < v[i].length; j++) {
+                v[i][j] *= s;
+            }
+        }
+        return v;
+    }
+
+								
+    var cube = scale([			//deklaracja zmiennej "cube" (szeœcian), skala=200
+        [1, 1, 1], //wierzcho³ki górne
+		[2, 1, 1],
+        [2, 1, 2], 
+		[1, 1, 2],
+		
+		[1, 2, 1], //wierzcho³ki dolne
+		[2, 2, 1],
+        [2, 2, 2], 
+		[1, 2, 2],
+		
+		[1.5, 0.5, 1.5], // czubek gorny
+		[1.5, 2.5, 1.5], // czubek dolny
+		
+		[0.5, 1.5, 1.5], // czubek lewa
+		[1.5, 1.5, 0.5], // czubek przedni
+		[2.5, 1.5, 1.5], // czubek prawy
+		[1.5, 1.5, 2.5], // czubek tylne
+		
+		
+    ], 200);
+
+   
+    function drawCube() {				
+        for (var i = 0; i < 3; i++) {				//krawêdzie górne
+            line3D(cube[i], cube[i + 1], "blue");}
+			
+        line3D(cube[3], cube[0], "blue");
+		
+		for (var i = 4; i < 7; i++) {       		//krawêdzie dolne
+            line3D(cube[i], cube[i + 1],"red");}
+			
+        line3D(cube[7], cube[4], "red"); 
+		
+		for (var i = 0; i < 4; i++) {     			//krawêdzie pionowe
+            line3D(cube[i], cube[i + 4], "green");}
+			
+		/*for(var i=0; i<4; i++) {			// mozna tak zamiast wersji jak powyzej
+			line3D(cube[i], cube[(i+1)%4], "red");
+			line3D(cube[i+4], cube[(i+1)%4 + 4], "blue");
+			line3D(cube[i], cube[i+4], "green");
+		}*/
+			
+		for (var i = 0; i <= 3; i++) {       		//czobek gorny
+            line3D(cube[i], cube[8],"black");}
+			
+		for (var i = 4; i <= 7; i++) {       		//czobek gorny
+            line3D(cube[i], cube[9],"black");}
+			
+			// czubek lewy
+		line3D(cube[0], cube[10], "black");
+		line3D(cube[3], cube[10], "black");
+		line3D(cube[4], cube[10], "black");
+		line3D(cube[7], cube[10], "black");
+		
+			// czubek przedni
+		line3D(cube[0], cube[11], "black");
+		line3D(cube[1], cube[11], "black");
+		line3D(cube[4], cube[11], "black");
+		line3D(cube[5], cube[11], "black");
+		
+			// czubek prawy
+		line3D(cube[1], cube[12], "black");
+		line3D(cube[2], cube[12], "black");
+		line3D(cube[5], cube[12], "black");
+		line3D(cube[6], cube[12], "black");
+		
+			// czubek tylny
+		line3D(cube[2], cube[13], "black");
+		line3D(cube[3], cube[13], "black");
+		line3D(cube[6], cube[13], "black");
+		line3D(cube[7], cube[13], "black");
+		
+    }
+
+	
+	
+	
+	function degreesToRadians(angle) {  
+    return radians = (Math.PI / 180) * angle;
+    }	
+    
+	function rotateX(p,q,angle){  // obrót punktu "p" o k¹t "angle" wokó³ prostej równoleg³ej do osi X i przechodz¹cej przez punkt "q"
+	 var pom=p[1];
+	 var f=degreesToRadians(angle);
+	 
+	 p[1]= ((p[1]-q[1])*Math.cos(f)-(p[2]-q[2])*Math.sin(f))+q[1];
+	 p[2]= ((pom-q[1])*Math.sin(f)+(p[2]-q[2])*Math.cos(f))+q[2];
+	 return p;
+	 }
+	 
+	 function rotateY(p,q,angle){   // obrót punktu "p" o k¹t "angle" wokó³ prostej równoleg³ej do osi Y i przechodz¹cej przez punkt "q"
+	 var pom=p[2];
+	 var f=degreesToRadians(angle);
+	 
+	 p[2]= ((p[2]-q[2])*Math.cos(f)-(p[0]-q[0])*Math.sin(f))+q[2];
+	 p[0]= ((pom-q[2])*Math.sin(f)+(p[0]-q[0])*Math.cos(f))+q[0];
+	 return p;
+	 }
+	function rotateZ(p,q,angle){	// obrót punktu "p" o k¹t "angle" wokó³ prostej równoleg³ej do osi Z i przechodz¹cej przez punkt "q"
+	 var pom=p[0];
+	 var f=degreesToRadians(angle);
+	 
+	 p[0]= ((p[0]-q[0])*Math.cos(f)-(p[1]-q[1])*Math.sin(f))+q[0];
+	 p[1]= ((pom-q[0])*Math.sin(f)+(p[1]-q[1])*Math.cos(f))+q[1];
+	 return p;
+    }
+	
+		// pzrywrócenie stanu pocz¹tkowego
+	function resetCube(){
+	stopAnimation();
+	cube = scale([			
+        [1, 1, 1], 
+		[2, 1, 1],
+        [2, 1, 2], 
+		[1, 1, 2],
+		
+		[1, 2, 1], 
+		[2, 2, 1],
+        [2, 2, 2], 
+		[1, 2, 2],
+		
+		[1.5, 0.5, 1.5], // czubek gorny
+		[1.5, 2.5, 1.5], // czubek dolny
+		
+		[0.5, 1.5, 1.5], // czubek lewa
+		[1.5, 1.5, 0.5], // czubek przedni
+		[2.5, 1.5, 1.5], // czubek prawy
+		[1.5, 1.5, 2.5], // czubek tylne
+    ], 200);
+	d=700;
+	clear_canvas();
+	drawCube();
+	}
+	
+	
+
+</script>
+</head>
+
+
+<body onkeydown="keyDownHandler(event)"> 		<!-- usatwienie obs³ugi klawiatury -->
+
+<!-- Ustawienie rozmiarów p³ótna: 640x680 -->
+<canvas id="canvas" width='640' height='680' style='background:rgb(222,222,222)'>
+
+<p>Sorry: Browser does not support Graphics Canvas</p></canvas>
+<br /><br />
+
+    <button onclick="drawCube();">Rysuj</button>
+	<button onclick="startRotationX();">Animacja X</button> 
+	<button onclick="startRotationY();">Animacja Y</button> 
+	<button onclick="startRotationZ();">Animacja Z</button> 
+	<button onclick="stopAnimation();">STOP</button> 
+	<button onclick="resetCube();">RESET</button> 
+
+
+
+</body>
+</html>

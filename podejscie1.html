@@ -1,0 +1,65 @@
+    var cube = scale([			//deklaracja zmiennej "cube" (sześcian), skala=200
+	    [2, 1, 1], //wierzchołki górne 0-3
+		[6, 1, 1],
+        [6, 1, 3], 
+		[2, 1, 3],
+		
+		[2, 5, 1], //wierzchołki dolne 4-7
+		[6, 5, 1],
+        [6, 5, 3], 
+		[2, 5, 3],
+		
+		[0, 2, 1], //przednie wysuniecie 8-11
+		[0, 2, 3],
+		[0, 4, 1],
+		[0, 4, 3],
+		
+		[10, 2, 1], //tylnie wysuniecie 12 i 13
+		[10, 2, 3],
+		
+		[4, 1, 2], 
+		[4, -3, 2], //smiglo 14 i 15
+		
+		[2, -3, 2],
+		[4, -3, 1.5],
+		[6, -3, 2],
+		[4, -3, 3],
+
+    ], 200);
+
+   
+   function drawCube() {				
+        for (var i = 0; i < 3; i++) {				//krawędzie górne
+            line3D(cube[i], cube[i + 1], "blue");}
+			
+        line3D(cube[3], cube[0], "blue");
+		
+		for (var i = 4; i < 7; i++) {       		//krawędzie dolne
+            line3D(cube[i], cube[i + 1],"blue");}
+			
+        line3D(cube[7], cube[4], "blue");
+		
+		
+		line3D(cube[0], cube[8], "red");
+		line3D(cube[3], cube[9], "red");
+		line3D(cube[4], cube[10], "red");
+		line3D(cube[7], cube[11], "red");
+		line3D(cube[8], cube[10], "red");
+		line3D(cube[9], cube[11], "red");
+		line3D(cube[8], cube[9], "red");
+		line3D(cube[10], cube[11], "red");
+	
+		
+		line3D(cube[1], cube[12], "green");
+		line3D(cube[2], cube[13], "green");
+		line3D(cube[5], cube[12], "green");
+		line3D(cube[6], cube[13], "green");
+		line3D(cube[12], cube[13], "green");
+		
+		line3D(cube[14], cube[15], "blue");
+		
+		line3D(cube[15], cube[16], "blue");
+		line3D(cube[15], cube[17], "blue");
+		line3D(cube[15], cube[18], "blue");
+		line3D(cube[15], cube[19], "blue");
+    }	
